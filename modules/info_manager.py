@@ -1,7 +1,13 @@
 import datetime
+import logging
+
 from modules.info_getter import InfoGetter
 from modules.info_poster import InfoPoster
 
+from settings import LOGGER_NAME
+
+
+logger = logging.getLogger(LOGGER_NAME)
 
 DATE_FORMAT_STR = "%Y-%m-%d"
 
@@ -12,6 +18,8 @@ class InfoManager:
 
     def forward_daily_sales(self) -> int:
         (result_code, reports) = InfoGetter().get_today_sales_reports()
+
+        logger.debug(reports)
 
         if result_code != 200:
             return result_code
@@ -32,9 +40,15 @@ class InfoManager:
                     {
                         "UnitNo": "TDM-LG-206",
                         "LeaseCode": "t0018733",
-                        "SalesDate": datetime.datetime.now().strftime(DATE_FORMAT_STR),
+                        "SalesDate": (
+                            datetime.datetime.now() - datetime.timedelta(days=1)
+                        ).strftime(DATE_FORMAT_STR),
                         "TransactionCount": str(payments_count),
                         "NetSales": str(net_sales),
+                        "FandBSplit": {
+                            "Ch_DineIn": str(net_sales),
+                            "Ch_DineIncnt": str(payments_count),
+                        },
                     }
                 ]
             }
@@ -72,6 +86,10 @@ class InfoManager:
                         "SalesDateTo": date_to.strftime(DATE_FORMAT_STR),
                         "TransactionCount": str(payments_count),
                         "NetSales": str(net_sales),
+                        "FandBSplit": {
+                            "Ch_DineIn": str(net_sales),
+                            "Ch_DineIncnt": str(payments_count),
+                        },
                     }
                 ]
             }

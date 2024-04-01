@@ -26,7 +26,11 @@ def main():
         case "1":
             result = InfoManager().forward_monthly_sales()
 
+        case "-help":
+            print("0 - forward daily sales;\n1 - forward monthly sales;")
+
         case _:
+            logger.error("Unrecognized run code. Exiting...")
             result = -1
 
     if result != 200:
