@@ -1,1 +1,3 @@
-# sales-data-forwarder
+- 0: forward daily sales;
+- 1: forward monthly sales;
+- help: print help
