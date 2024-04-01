@@ -1,3 +1,3 @@
 - 0: forward daily sales;
 - 1: forward monthly sales;
-- help: print help
+- -help: print help
