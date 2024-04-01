@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from modules.info_manager import InfoManager
 
@@ -11,7 +12,25 @@ logger = logging.getLogger(LOGGER_NAME)
 
 
 def main():
-    InfoManager().forward_daily_sales()
+    if len(sys.argv) < 2:
+        InfoManager().forward_monthly_sales()
+        return
+
+    # argument #1 is next after file name
+    run_code = sys.argv[1]
+
+    match str(run_code):
+        case "0":
+            result = InfoManager().forward_daily_sales()
+
+        case "1":
+            result = InfoManager().forward_monthly_sales()
+
+        case _:
+            result = -1
+
+    if result != 200:
+        logger.error(f"FORWARDING ERROR: {result}")
 
 
 if __name__ == "__main__":

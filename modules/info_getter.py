@@ -1,4 +1,3 @@
-import json
 import requests
 import logging
 import datetime
@@ -24,7 +23,7 @@ class InfoGetter:
     def __init__(self) -> None:
         pass
 
-    def get_month_sales_reports(self) -> dict:
+    def get_month_sales_reports(self) -> tuple[int, dict]:
         range_to = datetime.datetime.now().replace(day=1)
         range_from = self.__get_previous_month(range_to)
 
@@ -35,11 +34,15 @@ class InfoGetter:
             headers=REQUEST_HEADER,
         )
 
-        logger.debug(req_result.text)
+        status_code = req_result.status_code
 
-        return json.loads(req_result.json())
+        if status_code != 200:
+            logger.error(req_result.text)
+            return (req_result.status_code, {})
 
-    def get_today_sales_reports(self) -> dict:
+        return (status_code, req_result.json()[0])
+
+    def get_today_sales_reports(self) -> tuple[int, dict]:
         range_to = datetime.datetime.now()
         range_from = range_to - datetime.timedelta(days=1)
 
@@ -50,14 +53,18 @@ class InfoGetter:
             headers=REQUEST_HEADER,
         )
 
-        logger.debug(req_result.text)
+        status_code = req_result.status_code
 
-        return req_result.json()[0]
-    
+        if status_code != 200:
+            logger.error(req_result.text)
+            return (req_result.status_code, {})
+
+        return (status_code, req_result.json()[0])
+
     def __get_previous_month(self, current_date: datetime.datetime):
         if current_date.month != 1:
             return current_date.replace(month=current_date.month - 1)
-        
+
         return current_date.replace(month=12).replace(year=current_date.year - 1)
 
     def __make_sales_reports_get_url(self, range_from: str, range_to: str) -> str:
